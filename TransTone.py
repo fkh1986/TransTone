@@ -1,4 +1,5 @@
 import math
+
 frequencyR = [697,770, 852, 941]
 frequencyC = [1209, 1336, 1477, 1633]
 
@@ -23,11 +24,22 @@ digits = {'0' : [4,2],
           'E' : [4,1],
           'F' : [4,3]}
 
+def GenSineWave(f,fs,t):
+    tp = range(0,int(fs*t))
+    sineSig = [math.sin(2*math.pi*f*ts/fs) for ts in tp]
+    return sineSig
+
+
 digitFreqs = list()
 
 for digit in digits:
     digitFreqs.append([frequencyR[digits[digit][0]-1],frequencyC[digits[digit][1]-1]])
 
+print(digitFreqs)
 
-def GenSineWave(f,fs,t):
-    for i in range(
+#test = GenSineWave(1,100,0.5)
+#print(test)
+
+
+
+
