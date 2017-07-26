@@ -33,12 +33,22 @@ digits = {'0': [4, 2],
 
 
 def GenDTMF(f1, f2, fs, t, volume):
-#    tp = range(0, int(fs*t))
-#    sineSig = [np.sin(2*np.pi*f1*ts/fs) + np.sin(2*np.pi*f2*ts/fs) for ts in tp]
     sineSig = array.array('f',((volume * math.sin(i / (f1 / 100.)) + volume * math.sin(i / (f2 / 100.)))
                                for i in range(int(fs*t)))).tostring()
-
     return sineSig
+
+def EncodeTinyLink(url):
+    shortener = pyshort.Shortener('Tinyurl')
+    TinyURL = shortener.short(URLText)
+    constURL = "http://tinyurl.com/"
+    if constURL in TinyURL:
+        lenconstURL = len(constURL)
+        StripTinyURL = TinyURL[lenconstURL:]
+        print(TinyURL)
+        print(StripTinyURL)
+        URLHex = StripTinyURL.encode().hex()
+        print(URLHex)
+        return URLHex
 
 
 digitFreqs = list()
@@ -46,37 +56,13 @@ digitFreqs = list()
 for digit in digits:
     digitFreqs.append([frequencyR[digits[digit][0]-1], frequencyC[digits[digit][1]-1]])
 
-# print(digitFreqs)
-# print(digitFreqs[0][0])
-# print(digitFreqs[0][1])
 
 URLText = input("Please Enter URL: ")
-shortener = pyshort.Shortener('Tinyurl')
-TinyURL = shortener.short(URLText)
-constURL = "http://tinyurl.com/"
-print(TinyURL.find(constURL))
-lenconstURL = len(constURL)
-StripTinyURL = TinyURL[lenconstURL:]
-print(TinyURL)
-print(StripTinyURL)
-URLHex = StripTinyURL.encode().hex()
-print(URLHex)
-
+URLHex = EncodeTinyLink(URLText)
 
 p = pyaudio.PyAudio()
 stream = p.open(rate=sr, channels=1, format=pyaudio.paFloat32, output=True)
 
-#for i in range(15):
-#    sin1 = GenSineWave(digitFreqs[i][0], samplingFreq, tonePeriod)
-#    sin2 = GenSineWave(digitFreqs[i][1], samplingFreq, tonePeriod)
-#    test = GenDTMF(digitFreqs[i][0], digitFreqs[i][1], samplingFreq, tonePeriod, volume)
-#   test = [a+b for a, b in zip(sin1, sin2)]
-#    atest = np.asarray(test).astype(np.float32)
-    #print(atest)
-    #print(len(atest))
-#    atest = test
-
-#   stream.write(atest)
 
 for hexdigit in URLHex:
     test = GenDTMF(digitFreqs[int(hexdigit, 16)][0], digitFreqs[int(hexdigit, 16)][1], samplingFreq, tonePeriod, volume)
