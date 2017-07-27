@@ -63,13 +63,13 @@ for digit in digits:
 
 
 # This function is used to generate DTMF from Frequency 1 and Frequency 2, with a certain Sampling Frequency
-# for a period of t seconds, and applying volume scaling
+# for a period of t seconds, and applying volume v scaling, for every ts sample time
 # Sinusoidal tone waves are generated with the following formula:
-# Sinusoidal DTMF Tone = A * Sin(2*pi*f1/fs*ts) + A * Sin(2*pi*f2/fs*ts)
+# Sinusoidal DTMF Tone = A * (Sin(2*pi*f1/fs*ts) + Sin(2*pi*f2/fs*ts))
 
-def GenDTMF(f1, f2, fs, t, volume):
-    sineSig = array.array('f',((volume * math.sin(2*math.pi*i * (f1 / fs)) + volume * math.sin(2*math.pi*i * (f2 / fs)))
-                               for i in range(int(fs*t)))).tostring()
+def GenDTMF(f1, f2, fs, t, v):
+    sineSig = array.array('f',(v*(math.sin(2*math.pi*ts * (f1 / fs)) + math.sin(2*math.pi*ts * (f2 / fs)))
+                               for ts in range(int(fs*t)))).tostring()
     return sineSig
 
 # This function is used to encode a URL into a shortened URL
