@@ -52,17 +52,6 @@ digits = {'0': [frequencyR[3], frequencyC[1]],
           'f': [frequencyR[3], frequencyC[2]]
           }
 
-
-# Form a list of 16 values 0 to 15 to represent values from 0 to F
-# This list will include frequencies used to generate the sinusoidal DTMF signals
-
-#### CONSIDER GETTING RID OF THIS AND INCLUDED DIRECTLY INTO THE DICTIONARY TUPLES TO SIMPLIFY CODE ####
-
-# digitFreqs = list()
-# for digit in digits:
-#     digitFreqs.append([frequencyR[digits[digit][0]-1], frequencyC[digits[digit][1]-1]])
-
-
 # This function is used to generate DTMF from Frequency 1 and Frequency 2, with a certain Sampling Frequency
 # for a period of t seconds, and applying volume v scaling, for every ts sample time
 # Sinusoidal tone waves are generated with the following formula:
@@ -107,7 +96,6 @@ def PlayLinkStream(hexdata):
 
     # Generate the DTMF sinusoidal tones
     for hexdigit in URLHex:
-        #waveData = GenDTMF(digitFreqs[int(hexdigit, 16)][0], digitFreqs[int(hexdigit, 16)][1], samplingFreq, tonePeriod, volume)
         waveData = GenDTMF(digits[hexdigit][0], digits[hexdigit][1], samplingFreq, tonePeriod, volume)
         stream.write(waveData)
 
