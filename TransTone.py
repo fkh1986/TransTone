@@ -30,7 +30,7 @@ tonePeriod = 0.1
 # The volume scaling to avoid clipping the audio signal upon addition of sinusoidal waves
 volume = 0.5
 
-# Define the rows and columns for each DTMF digit from 0-F
+# Define a tuple for the rows and columns for each DTMF digit from 0-F
 # In original DTMF digit E and F do not exist
 # The # and * digits where replaced by E and F in order to be able to transmit data in Hexadecimal format
 
@@ -51,29 +51,60 @@ digits = {'0': [4, 2],
           'E': [4, 1],
           'F': [4, 3]}
 
-# Generate DTMF from Frequency 1 and Frequency 2 for a period of t seconds, and applying volume scaling
+
+# Form a list of 16 values 0 to 15 to represent values from 0 to F
+# This list will include frequencies used to generate the sinusoidal DTMF signals
+
+#### CONSIDER GETTING RID OF THIS AND INCLUDED DIRECTLY INTO THE DICTIONARY TUPLES TO SIMPLIFY CODE ####
+
+digitFreqs = list()
+for digit in digits:
+    digitFreqs.append([frequencyR[digits[digit][0]-1], frequencyC[digits[digit][1]-1]])
+
+
+# This function is used to generate DTMF from Frequency 1 and Frequency 2, with a certain Sampling Frequency
+# for a period of t seconds, and applying volume scaling
+# Sinusoidal tone waves are generated with the following formula:
+# Sinusoidal DTMF Tone = A * Sin(2*pi*f1/fs*ts) + A * Sin(2*pi*f2/fs*ts)
+
 def GenDTMF(f1, f2, fs, t, volume):
     sineSig = array.array('f',((volume * math.sin(2*math.pi*i * (f1 / fs)) + volume * math.sin(2*math.pi*i * (f2 / fs)))
                                for i in range(int(fs*t)))).tostring()
     return sineSig
 
+# This function is used to encode a URL into a shortened URL
+# TinyURL was used as it requires no tokens or authentications
+# Another benefit for shortened URLs is to standardize the URLs prefix "http://tinyurl.com/"
+# This way the URL can be shortened even more by removing the prefix
+
 def EncodeTinyLink(url):
+
+    # Used TinyURL to avoid using tokens or authentications
     shortener = pyshort.Shortener('Tinyurl')
     TinyURL = shortener.short(URLText)
+
+    # The consant prefix in the TinyURL is standard and can be removed altogether, and added in the receiving station
     constURL = "http://tinyurl.com/"
     if constURL in TinyURL:
         lenconstURL = len(constURL)
         StripTinyURL = TinyURL[lenconstURL:]
-        print(TinyURL)
-        print(StripTinyURL)
+        print(TinyURL)          # for debugging
+        print(StripTinyURL)     # for debugging
+
+        # Convert the TinyURL from string into Hexadecimal digits to be sent using DTMF
         URLHex = StripTinyURL.encode().hex()
-        print(URLHex)
+        print(URLHex)           # for debugging
         return URLHex
+
+# This function plays the Hexadecimal digits representing the stripped URL string using DTMF tones
+# It also returns the floating point representation for the actual audio wave
+# This wave will be captured by the receiving station, recorded, analyzed and decoded back to a URL
 
 def PlayLinkStream(hexdata):
     p = pyaudio.PyAudio()
     stream = p.open(rate=sr, channels=1, format=pyaudio.paFloat32, output=True)
 
+    # Generate the DTMF sinusoidal tones
     for hexdigit in URLHex:
         waveData = GenDTMF(digitFreqs[int(hexdigit, 16)][0], digitFreqs[int(hexdigit, 16)][1], samplingFreq, tonePeriod, volume)
         stream.write(waveData)
@@ -83,15 +114,16 @@ def PlayLinkStream(hexdata):
     return waveData
 
 
-digitFreqs = list()
-
-for digit in digits:
-    digitFreqs.append([frequencyR[digits[digit][0]-1], frequencyC[digits[digit][1]-1]])
-
+# User URL input
 
 URLText = input("Please Enter URL: ")
+
+# TinyURL encoding for the User URL
+# A valid URL should begin with http:// or https://
+
+#### CONSIDER HANDLING ERRORS FOR INVALID URLS ####
 URLHex = EncodeTinyLink(URLText)
 
+
+# Play tone stream for User URL
 waveData = PlayLinkStream(URLHex)
-
-
