@@ -50,6 +50,18 @@ def EncodeTinyLink(url):
         print(URLHex)
         return URLHex
 
+def PlayLinkStream(hexdata):
+    p = pyaudio.PyAudio()
+    stream = p.open(rate=sr, channels=1, format=pyaudio.paFloat32, output=True)
+
+    for hexdigit in URLHex:
+        waveData = GenDTMF(digitFreqs[int(hexdigit, 16)][0], digitFreqs[int(hexdigit, 16)][1], samplingFreq, tonePeriod, volume)
+        stream.write(waveData)
+
+    stream.close()
+    p.terminate()
+    return waveData
+
 
 digitFreqs = list()
 
@@ -60,13 +72,6 @@ for digit in digits:
 URLText = input("Please Enter URL: ")
 URLHex = EncodeTinyLink(URLText)
 
-p = pyaudio.PyAudio()
-stream = p.open(rate=sr, channels=1, format=pyaudio.paFloat32, output=True)
+waveData = PlayLinkStream(URLHex)
 
 
-for hexdigit in URLHex:
-    test = GenDTMF(digitFreqs[int(hexdigit, 16)][0], digitFreqs[int(hexdigit, 16)][1], samplingFreq, tonePeriod, volume)
-    stream.write(test)
-
-stream.close()
-p.terminate()
