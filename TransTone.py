@@ -106,7 +106,7 @@ def PlayLinkStream(hexdata):
 
 # User URL input
 
-URLText = input("Please Enter URL: ")
+URLText = input("Please enter a URL: ")
 
 # TinyURL encoding for the User URL
 # A valid URL should begin with http:// or https://
