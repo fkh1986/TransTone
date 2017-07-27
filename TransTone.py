@@ -34,22 +34,23 @@ volume = 0.5
 # In original DTMF digit E and F do not exist
 # The # and * digits where replaced by E and F in order to be able to transmit data in Hexadecimal format
 
-digits = {'0': [4, 2],
-          '1': [1, 1],
-          '2': [1, 2],
-          '3': [1, 3],
-          '4': [2, 1],
-          '5': [2, 2],
-          '6': [2, 3],
-          '7': [3, 1],
-          '8': [3, 2],
-          '9': [3, 3],
-          'A': [1, 4],
-          'B': [2, 4],
-          'C': [3, 4],
-          'D': [4, 4],
-          'E': [4, 1],
-          'F': [4, 3]}
+digits = {'0': [frequencyR[3], frequencyC[1]],
+          '1': [frequencyR[0], frequencyC[0]],
+          '2': [frequencyR[0], frequencyC[1]],
+          '3': [frequencyR[0], frequencyC[2]],
+          '4': [frequencyR[1], frequencyC[0]],
+          '5': [frequencyR[1], frequencyC[1]],
+          '6': [frequencyR[1], frequencyC[2]],
+          '7': [frequencyR[2], frequencyC[0]],
+          '8': [frequencyR[2], frequencyC[1]],
+          '9': [frequencyR[2], frequencyC[2]],
+          'a': [frequencyR[0], frequencyC[3]],
+          'b': [frequencyR[1], frequencyC[3]],
+          'c': [frequencyR[2], frequencyC[3]],
+          'd': [frequencyR[3], frequencyC[3]],
+          'e': [frequencyR[3], frequencyC[0]],
+          'f': [frequencyR[3], frequencyC[2]]
+          }
 
 
 # Form a list of 16 values 0 to 15 to represent values from 0 to F
@@ -57,9 +58,9 @@ digits = {'0': [4, 2],
 
 #### CONSIDER GETTING RID OF THIS AND INCLUDED DIRECTLY INTO THE DICTIONARY TUPLES TO SIMPLIFY CODE ####
 
-digitFreqs = list()
-for digit in digits:
-    digitFreqs.append([frequencyR[digits[digit][0]-1], frequencyC[digits[digit][1]-1]])
+# digitFreqs = list()
+# for digit in digits:
+#     digitFreqs.append([frequencyR[digits[digit][0]-1], frequencyC[digits[digit][1]-1]])
 
 
 # This function is used to generate DTMF from Frequency 1 and Frequency 2, with a certain Sampling Frequency
@@ -106,7 +107,8 @@ def PlayLinkStream(hexdata):
 
     # Generate the DTMF sinusoidal tones
     for hexdigit in URLHex:
-        waveData = GenDTMF(digitFreqs[int(hexdigit, 16)][0], digitFreqs[int(hexdigit, 16)][1], samplingFreq, tonePeriod, volume)
+        #waveData = GenDTMF(digitFreqs[int(hexdigit, 16)][0], digitFreqs[int(hexdigit, 16)][1], samplingFreq, tonePeriod, volume)
+        waveData = GenDTMF(digits[hexdigit][0], digits[hexdigit][1], samplingFreq, tonePeriod, volume)
         stream.write(waveData)
 
     stream.close()
