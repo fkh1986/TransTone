@@ -53,7 +53,7 @@ digits = {'0': [4, 2],
 
 # Generate DTMF from Frequency 1 and Frequency 2 for a period of t seconds, and applying volume scaling
 def GenDTMF(f1, f2, fs, t, volume):
-    sineSig = array.array('f',((volume * math.sin(i / (f1 / fs)) + volume * math.sin(i / (f2 / fs)))
+    sineSig = array.array('f',((volume * math.sin(2*math.pi*i * (f1 / fs)) + volume * math.sin(2*math.pi*i * (f2 / fs)))
                                for i in range(int(fs*t)))).tostring()
     return sineSig
 
